@@ -1,25 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
 
+import './App.css';
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom"
+import Home from "./containers/Home"
+import SignUp from "./containers/SignUp"
+import SignIn from "./containers/SignIn"
+import ProtectedRoutes from "./auth";
+import {useEffect} from "react";
+import {getAllCategories, getAllProducts, isUserLoggedIn, userlisting} from "./actions";
+import {useDispatch, useSelector} from "react-redux";
+import Products from "./containers/Products";
+import Orders from "./containers/orders";
+import Categories from "./containers/categories";
+import Users from "./containers/users";
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const dispatch = useDispatch();
+    const auth = useSelector(state =>state.auth)
+    useEffect(()=>{
+        if(!auth.authenticate){
+            dispatch(isUserLoggedIn());
+
+        }
+
+
+    },[]);
+
+    return (
+        <>
+            <Routes>
+                <Route path={"/"} element={<SignIn/>}/>
+                <Route path={"/signup"} element={<SignUp/>}/>
+                <Route path={"/"} element={<ProtectedRoutes/>}>
+                    <Route exact path='/home' element={<Home/>}/>
+                    <Route  path='/products' element={<Products></Products>}/>
+                    <Route  path='/orders' element={<Orders></Orders>}/>
+                    <Route  path='/users' element={<Users></Users>}/>
+                    <Route  path='/categories' element={<Categories></Categories>}/>
+                </Route>
+            </Routes>
+            {/*<Layout></Layout>*/}
+
+        </>
+    );
 }
 
 export default App;
